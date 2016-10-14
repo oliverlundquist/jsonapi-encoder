@@ -3,63 +3,43 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use OliverLundquist\ProductResource;
-use OliverLundquist\CategoryResource;
-use OliverLundquist\ProductSchema;
-use OliverLundquist\ProductCategorySchema;
-use OliverLundquist\CategorySchema;
-use OliverLundquist\ProductCategory;
+use OliverLundquist\ProductTransformer;
+use OliverLundquist\ProductCategoryResource;
+use OliverLundquist\ProductCategoryTransformer;
 use Neomerx\JsonApi\Encoder\Encoder;
 use Neomerx\JsonApi\Encoder\EncoderOptions;
 use Neomerx\JsonApi\Document\Link;
 
+$options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT;
+$urlPrefix = 'https://api.mystore.no';
+
+$encoder = Encoder::instance([
+    ProductResource::class         => ProductTransformer::class,
+    ProductCategoryResource::class => ProductCategoryTransformer::class,
+], new EncoderOptions($options, $urlPrefix));
+
 $product1 = new ProductResource;
 $product1->id = 2;
-$product1->firstName = 'Oliver';
-$product1->lastName  = 'Lundquist';
-
+$product1->productName = ['se' => 'Mjolk', 'no' => 'Melk'];
+$product1->quantity  = '24';
 $product2 = new ProductResource;
 $product2->id = 3;
-$product2->firstName = 'Oliver';
-$product2->lastName  = 'Lundquist';
-
-// $options = JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT;
-$encoder = Encoder::instance([
-    ProductResource::class  => ProductSchema::class,
-    CategoryResource::class => CategorySchema::class,
-    ProductCategory::class => ProductCategorySchema::class,
-], new EncoderOptions($options = JSON_PRETTY_PRINT, $urlPrefix = 'http://example.com'));
+$product2->productName = ['se' => 'Cykel', 'no' => 'Sykkel'];
+$product2->quantity  = '48';
 
 $data = $encoder->encodeData([$product1, $product2]);
 echo $data . PHP_EOL;
 
-$encoder2 = Encoder::instance([
-    ProductResource::class  => ProductSchema::class,
-    CategoryResource::class => CategorySchema::class,
-    ProductCategory::class => ProductCategorySchema::class,
-], new EncoderOptions($options = JSON_PRETTY_PRINT));
-
-$productCategory1 = new ProductCategory;
+$productCategory1 = new ProductCategoryResource;
 $productCategory1->id = 22;
-$productCategory2 = new ProductCategory;
+$productCategory2 = new ProductCategoryResource;
 $productCategory2->id = 33;
 
-$data = $encoder2
-            ->withLinks([
-                'self'    => new Link('/articles/1/relationships/tags'),
-                'related' => new Link('/articles/1/tags')
-            ])
-            ->encodeData([$productCategory1, $productCategory2]);
-
+$data = $encoder
+                ->withLinks([
+                    'self'    => new Link('/articles/1/relationships/tags'),
+                    'related' => new Link('/articles/1/tags')
+                ])
+                ->encodeData([$productCategory1, $productCategory2]);
 
 echo $data . PHP_EOL;
-
-// {
-//   "links": {
-//     "self": "/articles/1/relationships/tags",
-//     "related": "/articles/1/tags"
-//   },
-//   "data": [
-//     { "type": "tags", "id": "2" },
-//     { "type": "tags", "id": "3" }
-//   ]
-// }

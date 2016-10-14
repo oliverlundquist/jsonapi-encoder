@@ -2,7 +2,7 @@
 
 namespace OliverLundquist;
 
-class ProductCategory
+class ProductCategoryResource
 {
     //
 }
