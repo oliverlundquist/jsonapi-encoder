@@ -1,0 +1,17 @@
+{
+    "name": "oliver/jsonapi-encoder",
+    "authors": [
+        {
+            "name": "Oliver Lundquist",
+            "email": "oliver@kurashicom.jp"
+        }
+    ],
+    "require": {
+        "neomerx/json-api": "^0.8.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "OliverLundquist\\": "src/"
+        }
+    }
+}
