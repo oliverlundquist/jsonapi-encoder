@@ -17,7 +17,6 @@ class ProductTransformer extends SchemaProvider
 
     public function getAttributes($product)
     {
-        var_dump($product);
         return [
             'name' => $product->productName,
             'quantity'  => $product->quantity,
